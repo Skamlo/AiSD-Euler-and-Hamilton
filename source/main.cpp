@@ -18,10 +18,15 @@ int main(int argc, char *argv[])
     // input mode
     if (argc >= 2)
     {
-        if (!std::strcmp(argv[1], "-hamiltion") || !std::strcmp(argv[1], "-g"))
+        if (!std::strcmp(argv[1], "-hamiltion") || !std::strcmp(argv[1], "-h"))
             inputMode = HAMILTON;
-        else if (!std::strcmp(argv[1], "-non-hamilton") || !std::strcmp(argv[1], "-up"))
+        else if (!std::strcmp(argv[1], "-non-hamilton") || !std::strcmp(argv[1], "-nh"))
             inputMode = NON_HAMILTON;
+        else if (!std::strcmp(argv[1], "-help"))
+        {
+            std::cout << "-h for hamilton graph\n-nh for non-hamilton graph" << std::endl;
+            return 1;
+        }
         else
         {
             std::cout << "You incorrect specify the input mode.\n";
@@ -50,7 +55,15 @@ int main(int argc, char *argv[])
 
         if (option == "print")
         {
-            graph.print();
+            graph.print("list");
+        }
+        else if (option == "print list" || option == "printlist" || option == "print-list")
+        {
+            graph.print("list");
+        }
+        else if (option == "print matrix" || option == "printmatrix" || option == "print-matrix")
+        {
+            graph.print("matrix");
         }
         else if (option == "find euler" || option == "findeuler" || option == "find-euler")
         {
@@ -64,8 +77,9 @@ int main(int argc, char *argv[])
         {
             std::cout << "Help            Show this message" << std::endl
                       << "Print           Print the graph in a previously specified type" << std::endl
-                      << "find euler      Find Euler cicle in graph and print it" << std::endl
-                      << "find hamilton   Find Hamilton cicle in graph and print it" << std::endl;
+                      << "Find euler      Find Euler cicle in graph and print it" << std::endl
+                      << "Find hamilton   Find Hamilton cicle in graph and print it" << std::endl
+                      << "Exit            Exits the program" << std::endl;
         }
         else if (option == "exit")
         {
