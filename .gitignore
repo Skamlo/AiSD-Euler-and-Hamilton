@@ -165,4 +165,5 @@ ignore
 .vscode
 
 # Unnecessary files
+ignore
 create.sh

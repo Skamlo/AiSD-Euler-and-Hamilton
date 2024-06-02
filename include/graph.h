@@ -15,12 +15,15 @@ public:
     std::vector<std::vector<int>> createMatrix(int rows, int cols);
     std::vector<int> generateUniqueNumbers(int n, int k);
     std::vector<int> generateShuffledVector(int n);
-    bool checkNums(std::string s);
+    bool checkIfNums(std::string s);
     bool generate(int inputMode);
     void generateList();
+
     void print(std::string type);
     void printMatrix();
     void printList();
+
     void findEulerCicle();
-    void findHamiltonCicle();
+    
+    bool findHamiltonCicle();
 };

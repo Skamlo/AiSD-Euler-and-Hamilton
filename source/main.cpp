@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     // input mode
     if (argc >= 2)
     {
-        if (!std::strcmp(argv[1], "-hamiltion") || !std::strcmp(argv[1], "-h"))
+        if (!std::strcmp(argv[1], "-hamilton") || !std::strcmp(argv[1], "-h"))
             inputMode = HAMILTON;
         else if (!std::strcmp(argv[1], "-non-hamilton") || !std::strcmp(argv[1], "-nh"))
             inputMode = NON_HAMILTON;
@@ -29,14 +29,19 @@ int main(int argc, char *argv[])
         }
         else
         {
-            std::cout << "You incorrect specify the input mode.\n";
+            std::cout << "You incorrect specify the input mode.\n"
+                      << "Available modes are:\n"
+                      << "\t-hamiltion\n"
+                      << "\t-non-hamilton\n";
             return 1;
         }
     }
     else
     {
         std::cout << "You did not specify the input mode.\n"
-                  << std::endl;
+                  << "Available modes are:\n"
+                  << "\t-hamiltion\n"
+                  << "\t-non-hamilton\n";
         return 1;
     }
 

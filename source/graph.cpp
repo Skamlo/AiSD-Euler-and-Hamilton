@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <chrono>
 #include <random>
+#include <queue>
+#include <stack>
 
 #include "graph.h"
 #include "actions.h"
@@ -16,53 +18,40 @@ std::vector<std::vector<int>> Graph::createMatrix(int rows, int cols)
     return std::vector<std::vector<int>>(rows, std::vector<int>(cols));
 }
 
+std::vector<int> Graph::generateShuffledVector(int n)
+{
+    std::vector<int> vec(n, 0);
+    for (int i=0; i<n; i++)
+        vec[i] = i;
+
+    // Initialize random number generator
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 g(seed);
+
+    // Shuffle the vector 
+    shuffle(vec.begin(), vec.end(), g);
+
+    return vec;
+}
+
 std::vector<int> Graph::generateUniqueNumbers(int n, int k)
 {
-    // Check if the range is smaller than the number of required unique numbers
-    if (k > n + 1)
+    if (k > n || n <= 0 || k <= 0)
     {
         std::cout << "Error: Number of unique numbers required exceeds the range.\n";
         return std::vector<int>();
     }
 
-    // Create a vector to hold the generated numbers
-    std::vector<int> numbers(n + 1);
-    for (int i = 0; i <= n; ++i)
-    {
-        numbers[i] = i;
-    }
+    std::vector<int> vec = generateShuffledVector(n);
 
-    // Shuffle the vector
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(numbers.begin(), numbers.end(), g);
+    std::vector<int> outputVector(k, 9);
+    for (int i=0; i<k; i++)
+        outputVector[i] = vec[i];
 
-    // Take first k elements
-    std::vector<int> result(numbers.begin(), numbers.begin() + k);
-
-    return result;
+    return outputVector;
 }
 
-std::vector<int> Graph::generateShuffledVector(int n) {
-    // Create a vector with values from 0 to n-1
-    std::vector<int> vec(n);
-    for (int i = 0; i < n; ++i) 
-    {
-        vec[i] = i;
-    }
-
-    // Obtain a random number generator based on a random device
-    std::random_device rd;
-    std::mt19937 g(rd());
-
-    // Shuffle the vector using the random number generator
-    std::shuffle(vec.begin(), vec.end(), g);
-
-    return vec;
-}
-
-
-bool Graph::checkNums(std::string s)
+bool Graph::checkIfNums(std::string s)
 {
     bool isAll = true;
 
@@ -83,7 +72,7 @@ bool Graph::generate(int inputMode)
     int nNodes = 0;
     std::cout << "     nodes> ";
     std::getline(std::cin, nNodesStr);
-    if (!checkNums(nNodesStr))
+    if (!checkIfNums(nNodesStr))
         return false;
     nNodes = strToInt(nNodesStr);
     this->nodesNumber = nNodes;
@@ -93,7 +82,7 @@ bool Graph::generate(int inputMode)
     int saturation = 0;
     std::cout << "saturation> ";
     std::getline(std::cin, saturationStr);
-    if (!checkNums(saturationStr))
+    if (!checkIfNums(saturationStr))
         return false;
     saturation = strToInt(saturationStr);
 
@@ -122,40 +111,51 @@ bool Graph::generate(int inputMode)
         else
             this->matrix[hamiltonPath[nNodes-1]][hamiltonPath[0]] = 1;
 
-        int nNodesInUpperTriangle = nNodes * (nNodes - 1) / 2 - nNodes;
+        int nNodesInUpperTriangle = nNodes * (nNodes - 1) / 2;
         int nNodesToFill = nNodesInUpperTriangle * saturation / 100;
+        nNodesToFill -= nNodes;
 
         if (nNodesToFill <= 0)
             return true;
 
-        std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - 1, nNodesToFill);
+        std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - nNodes, nNodesToFill);
 
-        for (int i = 0; i < indexes.size(); i++)
+        for (int index : indexes)
         {
-            int nHamiltonNodesFilled = 0;
-            for (int r=0; r<nNodes; r++)
+            int nOnes = 0;
+            int nthCell = 0;
+            for (int i=0; i<nNodes-1; i++)
             {
-                for (int c=0; c<nNodes; c++)
+                for (int j=i+1; j<nNodes-1; j++)
                 {
-                    if (this->matrix[r][r + 1 + c] == 1)
-                        nHamiltonNodesFilled++;
+                    if (this->matrix[i][j] == 1)
+                        nOnes++;
+                    else
+                        nthCell++;
+                    if (nthCell > index)
+                        break;
                 }
             }
+            index += nOnes;
 
-            indexes[i] += nHamiltonNodesFilled;
-
-            for (int j = 0; j < nNodes - 1; j++)
+            int yPos = 0;
+            int xPos = 0;
+            int tracker = 0;
+            for (int i=nNodes-1; i > 0; i--)
             {
-                if (indexes[i] + 1 < nNodes - 1 - j)
+                if (tracker + i > index)
                 {
-                    this->matrix[j][j + 2 + indexes[i]] = 1;
+                    xPos = yPos + index - tracker + 1;
                     break;
                 }
                 else
                 {
-                    indexes[i] -= (nNodes - 1 - j);
+                    yPos++;
+                    tracker += i;
                 }
             }
+
+            this->matrix[yPos][xPos] = 1;
         }
     }
     else if (inputMode == NON_HAMILTON)
@@ -166,22 +166,28 @@ bool Graph::generate(int inputMode)
         if (nNodesToFill <= 0)
             return true;
 
-        std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - 1, nNodesToFill);
+        std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle, nNodesToFill);
 
-        for (int i = 0; i < indexes.size(); i++)
+        for (int index : indexes)
         {
-            for (int j = 0; j < nNodes - 1; j++)
+            int yPos = 0;
+            int xPos = 0;
+            int tracker = 0;
+            for (int i=nNodes-1; i > 0; i--)
             {
-                if (indexes[i] + 1 < nNodes - 1 - j)
+                if (tracker + i > index)
                 {
-                    this->matrix[j][j + 2 + indexes[i]] = 1;
+                    xPos = yPos + index - tracker + 1;
                     break;
                 }
                 else
                 {
-                    indexes[i] -= (nNodes - 1 - j);
+                    yPos++;
+                    tracker += i;
                 }
             }
+
+            this->matrix[yPos][xPos] = 1;
         }
     }
 
@@ -196,15 +202,15 @@ void Graph::generateList()
     {
         std::vector<int> row;
 
-        for (int c = 0; c < matrix.size(); c++)
+        for (int c = 0; c < this->matrix.size(); c++)
         {
-            if (matrix[r][c] == 1)
+            if (this->matrix[r][c] == 1 || this->matrix[c][r] == 1)
             {
                 row.push_back(c + 1);
             }
         }
 
-        list.push_back(row);
+        this->list.push_back(row);
     }
 }
 
@@ -218,13 +224,13 @@ void Graph::print(std::string type)
 
 void Graph::printMatrix()
 {
-    int spacesBefore = countDigits(matrix.size());
+    int spacesBefore = countDigits(this->matrix.size());
 
     // title bar
     for (int i=0; i<spacesBefore; i++)
         std::cout << " ";
     std::cout << " |";
-    for (int i = 1; i <= matrix.size(); i++)
+    for (int i = 1; i <= this->matrix.size(); i++)
         std::cout << " " << i;
 
     // separator
@@ -232,25 +238,25 @@ void Graph::printMatrix()
     for (int i=0; i<spacesBefore; i++)
         std::cout << "-"; 
     std::cout << "-+-";
-    for (int i = 1; i <= matrix.size(); i++)
+    for (int i = 1; i <= this->matrix.size(); i++)
         std::cout << "--";
 
     // values
     std::cout << "\n";
-    for (int i = 0; i < matrix.size(); i++)
+    for (int i = 0; i < this->matrix.size(); i++)
     {
         std::cout << i + 1;
         for (int j=0; j<spacesBefore-countDigits(i + 1); j++)
             std::cout << " ";
         std::cout << " |";
 
-        for (int j = 0; j < matrix.size(); j++)
+        for (int j = 0; j < this->matrix.size(); j++)
         {
             for (int s = 0; s < countDigits(j + 1); s++)
             {
                 std::cout << " ";
             }
-            std::cout << matrix[i][j];
+            std::cout << this->matrix[i][j];
         }
         std::cout << "\n";
     }
@@ -269,12 +275,16 @@ void Graph::printList()
     }
 }
 
+
+// EULER CYCLE
 void Graph::findEulerCicle()
 {
-
+    
 }
 
-void Graph::findHamiltonCicle()
+
+// HAMILTON CYCLE
+bool Graph::findHamiltonCicle()
 {
 
 }
