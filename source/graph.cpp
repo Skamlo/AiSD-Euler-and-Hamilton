@@ -120,24 +120,38 @@ bool Graph::generate(int inputMode)
 
         std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - nNodes, nNodesToFill);
 
-        for (int index : indexes)
+        for (int i=0; i<indexes.size(); i++)
         {
             int nOnes = 0;
-            int nthCell = 0;
-            for (int i=0; i<nNodes-1; i++)
+            int nCells = 0;
+            bool flag = true;
+            for (int row=0; row<nNodes-1; row++)
             {
-                for (int j=i+1; j<nNodes-1; j++)
+                if (!flag)
+                    break;
+
+                for (int col=row+1; col<nNodes; col++)
                 {
-                    if (this->matrix[i][j] == 1)
+                    if (this->matrix[row][col] == 1)
+                    {
                         nOnes++;
-                    else
-                        nthCell++;
-                    if (nthCell > index)
+                    }
+                    if (this->matrix[row][col] == 0)
+                    {
+                        nCells++;
+                    }
+                    if (nCells > indexes[i])
+                    {
+                        flag = false;
                         break;
+                    }
                 }
             }
-            index += nOnes;
+            indexes[i] += nOnes;
+        }
 
+        for (int index : indexes)
+        {
             int yPos = 0;
             int xPos = 0;
             int tracker = 0;
