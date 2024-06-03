@@ -23,7 +23,9 @@ public:
     void printMatrix();
     void printList();
 
-    void findEulerCicle();
-    
     bool findHamiltonCicle();
+    bool hamiltonCycleUtil(std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos);
+    bool isSafeHamilton(int node, std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos);
+    
+    void findEulerCicle();
 };

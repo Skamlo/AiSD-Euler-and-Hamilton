@@ -290,15 +290,78 @@ void Graph::printList()
 }
 
 
+// HAMILTON CYCLE
+bool Graph::findHamiltonCicle()
+{
+    matrix = this->matrix;
+    for (int row=0; row<matrix.size()-1; row++)
+    {
+        for (int col=row+1; col<matrix.size(); col++)
+        {
+            if (matrix[row][col] == 1)
+                matrix[col][row] = 1;
+        }
+    }
+
+    std::vector<int> path(matrix.size(), -1);
+    path[0] = 0;
+
+    if (this->hamiltonCycleUtil(matrix, path, 1)) 
+    { 
+        std::cout << "Hamilton cycle: ";
+        for (int node : path)
+            std::cout << node << " "; 
+        std::cout << path[0] << std::endl;
+        return true; 
+    }
+    else
+    {
+        std::cout << "Solution does not exist\n"; 
+        return false; 
+    }
+}
+
+bool Graph::hamiltonCycleUtil(std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos)
+{
+    if (pos == matrix.size())
+    {
+        if (matrix[path[pos - 1]][path[0]] == 1)
+            return true;
+        else
+            return false;
+    }
+
+    for (int node = 1; node < matrix.size(); node++)
+    {
+        if (this->isSafeHamilton(node, matrix, path, pos))
+        {
+            path[pos] = node;
+
+            if (this->hamiltonCycleUtil(matrix, path, pos + 1)) 
+                return true;
+
+            path[pos] = -1;
+        }
+    }
+
+    return false; 
+}
+
+bool Graph::isSafeHamilton(int node, std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos)
+{
+    if (matrix[path[pos - 1]][node] == 0)
+        return false;
+
+    for (int i=0; i<pos; i++)
+        if (path[i] == node)
+            return false;
+
+    return true;
+}
+
+
 // EULER CYCLE
 void Graph::findEulerCicle()
 {
     
-}
-
-
-// HAMILTON CYCLE
-bool Graph::findHamiltonCicle()
-{
-
 }
