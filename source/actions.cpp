@@ -20,9 +20,7 @@ std::string stringToLowercase(std::string text)
 
 bool textValidation(std::string *numbers)
 {
-    /*
-        Performs preprocessing data such as removing spaces
-    */
+    // Performs preprocessing data such as removing spaces
     std::string newNumbers;
     int lastIndex = -1;
     for (int i = 0; i < numbers->size(); i++)

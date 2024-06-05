@@ -10,6 +10,7 @@ public:
     int nodesNumber = 0;
     std::vector<std::vector<int>> matrix;
     std::vector<std::vector<int>> list;
+    int saturationForBenchmark = 0;
 
     // METHODS
     std::vector<std::vector<int>> createMatrix(int rows, int cols);
@@ -26,6 +27,6 @@ public:
     bool findHamiltonCicle();
     bool hamiltonCycleUtil(std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos);
     bool isSafeHamilton(int node, std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos);
-    
+
     void findEulerCicle();
 };

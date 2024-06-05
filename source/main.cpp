@@ -5,6 +5,10 @@
 #include "graph.h"
 #include "actions.h"
 
+// benchmark
+#include <chrono>
+#include <fstream>
+
 #define PLACEHOLDER 0
 #define HAMILTON 1
 #define NON_HAMILTON 2
@@ -51,6 +55,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    std::ofstream outputFile{"output.csv", std::ios_base::app};
+
     while (true)
     {
         std::string option;
@@ -72,11 +78,19 @@ int main(int argc, char *argv[])
         }
         else if (option == "find euler" || option == "findeuler" || option == "find-euler")
         {
+            const auto start{std::chrono::high_resolution_clock::now()};
             graph.findEulerCicle();
+            const auto end{std::chrono::high_resolution_clock::now()};
+            auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            outputFile << measureTime.count() << "euler " << graph.nodesNumber << " " << graph.saturationForBenchmark << std::endl;
         }
         else if (option == "find hamilton" || option == "findhamilton" || option == "find-hamilton")
         {
+            const auto start{std::chrono::high_resolution_clock::now()};
             graph.findHamiltonCicle();
+            const auto end{std::chrono::high_resolution_clock::now()};
+            auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            outputFile << measureTime.count() << "hamilton " << graph.nodesNumber << " " << graph.saturationForBenchmark << std::endl;
         }
         else if (option == "help")
         {
@@ -88,6 +102,7 @@ int main(int argc, char *argv[])
         }
         else if (option == "exit")
         {
+            outputFile.close();
             break;
         }
         else
