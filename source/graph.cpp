@@ -361,4 +361,108 @@ bool Graph::isSafeHamilton(int node, std::vector<std::vector<int>> &matrix, std:
 // EULER CYCLE
 void Graph::findEulerCicle()
 {
+    std::vector<int> cycle;
+    std::vector<std::vector<int>> tempList = this->list;
+    std::stack<int> currentPath;
+    std::vector<int> circuit;
+
+    // find cycle
+    if (isEulerianCycle())
+    {
+        currentPath.push(0);
+        int currentVertex = 0;
+
+        while (!currentPath.empty()) {
+            if (!tempList[currentVertex].empty()) {
+                currentPath.push(currentVertex);
+                int nextVertex = tempList[currentVertex].back();
+                tempList[currentVertex].pop_back();
+                auto it = std::find(
+                    tempList[nextVertex].begin(),
+                    tempList[nextVertex].end(),
+                    currentVertex
+                );
+                if (it != tempList[nextVertex].end()) {
+                    tempList[nextVertex].erase(it);
+                }
+                currentVertex = nextVertex;
+            } else {
+                circuit.push_back(currentVertex);
+                currentVertex = currentPath.top();
+                currentPath.pop();
+            }
+        }
+
+        std::reverse(circuit.begin(), circuit.end());
+    }
+
+    // print results
+    if (circuit.empty())
+    {
+        std::cout << "No Eulerian Cycle exists in the graph." << std::endl;
+    }
+    else
+    {
+        std::cout << "Eulerian Cycle: ";
+        for (int vertex : circuit)
+            std::cout << vertex << " ";
+        std::cout << std::endl;
+    }
+}
+
+bool Graph::isEulerianCycle()
+{
+    std::vector<bool> visited(this->nodesNumber, false);
+    int startVertex = -1;
+
+    for (int i = 0; i < this->nodesNumber; ++i)
+    {
+        if (!this->list[i].empty())
+        {
+            startVertex = i;
+            break;
+        }
+    }
+
+    if (startVertex == -1)
+        return false;
+
+    std::stack<int> stack;
+    stack.push(startVertex);
+
+    while (!stack.empty())
+    {
+        int v = stack.top();
+        stack.pop();
+        
+        if (!visited[v])
+        {
+            visited[v] = true;
+            for (int u : this->list[v])
+            {
+                if (!visited[u])
+                    stack.push(u);
+            }
+        }
+    }
+
+    // Check if all non-zero degree vertices are visited
+    for (int i = 0; i < this->nodesNumber; ++i)
+    {
+        if (!this->list[i].empty() && !visited[i])
+        {
+            return false;
+        }
+    }
+
+    // Check if all vertices have even degree
+    for (int i = 0; i < this->nodesNumber; ++i)
+    {
+        if (this->list[i].size() % 2 != 0)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

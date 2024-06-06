@@ -29,4 +29,5 @@ public:
     bool isSafeHamilton(int node, std::vector<std::vector<int>> &matrix, std::vector<int> &path, int pos);
 
     void findEulerCicle();
+    bool isEulerianCycle();
 };
