@@ -100,6 +100,10 @@ int main(int argc, char *argv[])
                       << "Find hamilton   Find Hamilton cicle in graph and print it" << std::endl
                       << "Exit            Exits the program" << std::endl;
         }
+        else if (option == "export")
+        {
+            graph.exportToTiKZ();
+        }
         else if (option == "exit")
         {
             outputFile.close();

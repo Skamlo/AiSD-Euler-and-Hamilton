@@ -372,21 +372,25 @@ void Graph::findEulerCicle()
         currentPath.push(0);
         int currentVertex = 0;
 
-        while (!currentPath.empty()) {
-            if (!tempList[currentVertex].empty()) {
+        while (!currentPath.empty())
+        {
+            if (!tempList[currentVertex].empty())
+            {
                 currentPath.push(currentVertex);
                 int nextVertex = tempList[currentVertex].back();
                 tempList[currentVertex].pop_back();
                 auto it = std::find(
                     tempList[nextVertex].begin(),
                     tempList[nextVertex].end(),
-                    currentVertex
-                );
-                if (it != tempList[nextVertex].end()) {
+                    currentVertex);
+                if (it != tempList[nextVertex].end())
+                {
                     tempList[nextVertex].erase(it);
                 }
                 currentVertex = nextVertex;
-            } else {
+            }
+            else
+            {
                 circuit.push_back(currentVertex);
                 currentVertex = currentPath.top();
                 currentPath.pop();
@@ -434,7 +438,7 @@ bool Graph::isEulerianCycle()
     {
         int v = stack.top();
         stack.pop();
-        
+
         if (!visited[v])
         {
             visited[v] = true;
@@ -465,4 +469,41 @@ bool Graph::isEulerianCycle()
     }
 
     return true;
+}
+
+#include <cmath>
+#define PI 3.14
+void Graph::exportToTiKZ()
+{
+    int nodeCount = this->nodesNumber;
+
+    // Opening TikZ environment with graphdrawing library
+    std::cout
+        << "\\begin{tikzpicture}" << std::endl;
+    std::cout << "  \\tikzstyle{vertex}=[circle, draw, minimum size=30pt, inner sep=1pt]" << std::endl;
+
+    // Calculate positions and print vertices
+    double angleStep = 2 * PI / nodeCount;
+    for (int i = 0; i < nodeCount; ++i)
+    {
+        double angle = i * angleStep;
+        double x = 3 * cos(angle);
+        double y = 3 * sin(angle);
+        std::cout << "  \\node[vertex, fill={rgb,255:red,50; green,84; blue,100}, text=white] (" << i + 1 << ") at (" << x << "," << y << ") {" << i + 1 << "};" << std::endl;
+    }
+
+    // Print edges
+    for (int i = 0; i < nodeCount; ++i)
+    {
+        for (int j = 0; j < nodeCount; ++j)
+        {
+            if (matrix[i][j] == 1 && j > i)
+            { // Avoid printing edges twice
+                std::cout << "  \\draw[->] (" << i + 1 << ") -- (" << j + 1 << ");" << std::endl;
+            }
+        }
+    }
+
+    // Closing TikZ environment
+    std::cout << "\\end{tikzpicture}" << std::endl;
 }

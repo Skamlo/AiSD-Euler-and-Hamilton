@@ -30,4 +30,6 @@ public:
 
     void findEulerCicle();
     bool isEulerianCycle();
+
+    void exportToTiKZ();
 };
