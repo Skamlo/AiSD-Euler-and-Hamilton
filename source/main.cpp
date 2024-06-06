@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     }
 
     std::ofstream outputFile{"output.csv", std::ios_base::app};
-
+    graph.generateList();
     while (true)
     {
         std::string option;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
             graph.findEulerCicle();
             const auto end{std::chrono::high_resolution_clock::now()};
             auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-            outputFile << measureTime.count() << "euler " << graph.nodesNumber << " " << graph.saturationForBenchmark << std::endl;
+            outputFile << measureTime.count() << " euler " << graph.nodesNumber << " " << graph.saturationForBenchmark << " " << argv[1] << std::endl;
         }
         else if (option == "find hamilton" || option == "findhamilton" || option == "find-hamilton")
         {
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
             graph.findHamiltonCicle();
             const auto end{std::chrono::high_resolution_clock::now()};
             auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-            outputFile << measureTime.count() << "hamilton " << graph.nodesNumber << " " << graph.saturationForBenchmark << std::endl;
+            outputFile << measureTime.count() << " hamilton " << graph.nodesNumber << " " << graph.saturationForBenchmark << " " << argv[1] << std::endl;
         }
         else if (option == "help")
         {

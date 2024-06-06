@@ -204,9 +204,6 @@ bool Graph::generate(int inputMode)
             this->matrix[yPos][xPos] = 1;
         }
     }
-
-    this->generateList();
-
     return true;
 }
 
