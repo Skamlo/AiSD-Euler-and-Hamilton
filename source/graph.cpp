@@ -116,8 +116,10 @@ bool Graph::generate(int inputMode)
         nNodesToFill -= nNodes;
 
         if (nNodesToFill <= 0)
+        {
             this->generateList();
             return true;
+        }
 
         std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - nNodes, nNodesToFill);
 
