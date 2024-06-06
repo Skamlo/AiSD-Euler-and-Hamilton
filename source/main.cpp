@@ -56,7 +56,6 @@ int main(int argc, char *argv[])
     }
 
     std::ofstream outputFile{"output.csv", std::ios_base::app};
-    graph.generateList();
     while (true)
     {
         std::string option;

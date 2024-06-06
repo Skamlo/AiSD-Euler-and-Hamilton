@@ -116,6 +116,7 @@ bool Graph::generate(int inputMode)
         nNodesToFill -= nNodes;
 
         if (nNodesToFill <= 0)
+            this->generateList();
             return true;
 
         std::vector<int> indexes = this->generateUniqueNumbers(nNodesInUpperTriangle - nNodes, nNodesToFill);
@@ -204,6 +205,9 @@ bool Graph::generate(int inputMode)
             this->matrix[yPos][xPos] = 1;
         }
     }
+
+    this->generateList();
+
     return true;
 }
 
