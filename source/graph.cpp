@@ -6,6 +6,9 @@
 #include <queue>
 #include <stack>
 
+// benchmark
+#include <fstream>
+
 #include "graph.h"
 #include "actions.h"
 
@@ -86,6 +89,11 @@ bool Graph::generate(int inputMode)
         return false;
     saturation = strToInt(saturationStr);
     this->saturationForBenchmark = saturation;
+
+    // benchmark start
+    std::ofstream outputFile{"output.csv", std::ios_base::app};
+    const auto start{std::chrono::high_resolution_clock::now()};
+    
     // check if saturation is in correct range
     if (saturation < 0 || saturation > 100)
     {
@@ -174,6 +182,11 @@ bool Graph::generate(int inputMode)
 
             this->matrix[yPos][xPos] = 1;
         }
+
+        // benchmark write
+        const auto end{std::chrono::high_resolution_clock::now()};
+        auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        outputFile << measureTime.count() << " generate " << nNodes << " " << saturation << " -h" << std::endl;
     }
     else if (inputMode == NON_HAMILTON)
     {
@@ -206,9 +219,20 @@ bool Graph::generate(int inputMode)
 
             this->matrix[yPos][xPos] = 1;
         }
+
+        // benchmark write
+        const auto end{std::chrono::high_resolution_clock::now()};
+        auto measureTime = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        outputFile << measureTime.count() << " generate " << nNodes << " " << saturation << " -nh" << std::endl;
     }
 
+    for (int i=0; i<nNodes; i++)
+        this->matrix[i][nNodes-1] = 0;
+
     this->generateList();
+
+    // becnchmark end
+    outputFile.close();
 
     return true;
 }
